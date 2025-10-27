@@ -1,4 +1,4 @@
-<div class="account-list">
+<!-- <div class="account-list">
   <button (click)="openAddAccount()">Add Account</button>
   <ng-container *ngIf="isOpenAddAccount">
     <div class="add-account">
@@ -33,4 +33,8 @@
     </tr>
     </tbody>
   </table>
-</div>
+</div> -->
+<app-table [rows]="account" [columns]="listColumns" [total]="total" [isLoading]="isLoading"
+  [pagingMode]="pagingMode"></app-table>
+
+<app-ngx-infinite-scroll></app-ngx-infinite-scroll>

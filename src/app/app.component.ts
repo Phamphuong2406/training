@@ -1,9 +1,9 @@
-import {Component, OnInit, VERSION} from '@angular/core';
-import {AccountService} from './core/services/account.service';
-import {Observable, Subject} from 'rxjs';
-import {Account, createAccount, createParamSearch} from './core/model/account.model';
-import {takeUntil} from 'rxjs/operators';
-import {Accounts} from './core/data/account';
+import { Component, Input, OnInit, VERSION } from '@angular/core';
+import { AccountService } from './core/services/account.service';
+import { Observable, Subject } from 'rxjs';
+import { Account, createAccount, createParamSearch } from './core/model/account.model';
+import { takeUntil } from 'rxjs/operators';
+import { Accounts } from './core/data/account';
 import * as faker from 'faker';
 
 @Component({
@@ -19,7 +19,15 @@ export class AppComponent implements OnInit {
   isOpenEditAccount = false;
   selectedAccount: Account | undefined;
   searchStr = '';
+  listColumns = [
+    { field: 'firstname', label: 'Tên tài khoản', width: '200px' },
+    { field: 'account_number', label: 'Số tài khoản', width: '150px' },
+    { field: 'balance', label: 'Số dư', width: '150px' },
+  ];
 
+  total = 25;
+  isLoading = false;
+  pagingMode: 'scroll' | 'paging' = 'scroll';
   constructor(private accountService: AccountService) {
     // read data from file to localstorage
     this.unSubscribeAll = new Subject<any>();
@@ -27,13 +35,26 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllAccount();
+    this.getAllAccounyByRequest();
   }
 
   loadDataToLocal(): void {
     localStorage.setItem('accounts', JSON.stringify(Accounts));
   }
-
+  getAllAccounyByRequest(): void {
+    this.accountService.getAccounts(createParamSearch({
+      last_name: this.searchStr,
+      start: 0,
+      limit: this.total
+    }))
+      .pipe(takeUntil(this.unSubscribeAll))
+      .subscribe((resp: Account[]) => {
+        console.log(resp);
+        this.account = resp;
+      }, (err: Error) => {
+        this.account = [];
+      });
+  }
 
   getAllAccount(): void {
     this.accountService.getAccounts(createParamSearch({

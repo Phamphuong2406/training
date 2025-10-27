@@ -1,0 +1,28 @@
+<div class="table-container">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th *ngFor="let col of columns" [style.width]="col.width">
+                    {{ col.label }}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let row of rows">
+                <td *ngFor="let col of columns">
+                    {{ row[col.field] }}
+                </td>
+            </tr>
+
+            <!-- Hiển thị loading -->
+            <tr *ngIf="isLoading">
+                <td [attr.colspan]="columns.length" class="loading-cell">
+                    Đang tải dữ liệu...
+                </td>
+            </tr>
+
+
+        </tbody>
+    </table>
+
+</div>
