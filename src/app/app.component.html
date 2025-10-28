@@ -34,7 +34,7 @@
     </tbody>
   </table>
 </div> -->
-<app-table [rows]="account" [columns]="listColumns" [total]="total" [isLoading]="isLoading"
-  [pagingMode]="pagingMode"></app-table>
+<app-table [rows]="account" [columns]="listColumns" [total]="total" [isLoading]="isLoading" [pagingMode]="pagingMode"
+  (isLoaded)="onTableLoaded($event)"></app-table>
 
-<app-ngx-infinite-scroll></app-ngx-infinite-scroll>
+<!-- <app-ngx-infinite-scroll></app-ngx-infinite-scroll> -->

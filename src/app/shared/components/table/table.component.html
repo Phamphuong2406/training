@@ -1,28 +1,48 @@
-<div class="table-container">
-    <table class="custom-table">
+<p>thêm mới</p>
+<ng-template #tableTemplate>
+    <table class="datatable">
         <thead>
             <tr>
-                <th *ngFor="let col of columns" [style.width]="col.width">
-                    {{ col.label }}
-                </th>
+                <th *ngFor="let col of columns" [style.width]="col.width">{{ col.label }}</th>
             </tr>
         </thead>
-        <tbody>
+
+        <tbody *ngIf="!isLoading && rows.length > 0">
             <tr *ngFor="let row of rows">
                 <td *ngFor="let col of columns">
                     {{ row[col.field] }}
                 </td>
             </tr>
+        </tbody>
 
-            <!-- Hiển thị loading -->
-            <tr *ngIf="isLoading">
-                <td [attr.colspan]="columns.length" class="loading-cell">
-                    Đang tải dữ liệu...
-                </td>
+        <tbody *ngIf="isLoading">
+            <tr>
+                <td [attr.colspan]="columns.length" class="text-center">Đang tải dữ liệu...</td>
             </tr>
+        </tbody>
 
-
+        <tbody *ngIf="!isLoading && rows.length === 0">
+            <tr>
+                <td [attr.colspan]="columns.length" class="text-center">Không có dữ liệu</td>
+            </tr>
         </tbody>
     </table>
+</ng-template>
 
+<!-- Scroll mode -->
+<div *ngIf="pagingMode === 'scroll'" class="datatable-container scroll" (scroll)="onScroll($event)">
+    <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+</div>
+
+<!-- Paging mode -->
+<div *ngIf="pagingMode === 'paging'" class="datatable-container paging">
+    <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
+</div>
+
+<!-- Phân trang -->
+<div *ngIf="pagingMode === 'paging'" class="pagination">
+    <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="onPageChange(i + 1)"
+        [class.active]="currentPage === i + 1">
+        {{ i + 1 }}
+    </button>
 </div>

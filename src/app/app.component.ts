@@ -1,7 +1,11 @@
 import { Component, Input, OnInit, VERSION } from '@angular/core';
 import { AccountService } from './core/services/account.service';
 import { Observable, Subject } from 'rxjs';
-import { Account, createAccount, createParamSearch } from './core/model/account.model';
+import {
+  Account,
+  createAccount,
+  createParamSearch,
+} from './core/model/account.model';
 import { takeUntil } from 'rxjs/operators';
 import { Accounts } from './core/data/account';
 import * as faker from 'faker';
@@ -9,7 +13,7 @@ import * as faker from 'faker';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   name = 'Angular ' + VERSION.major;
@@ -27,7 +31,7 @@ export class AppComponent implements OnInit {
 
   total = 25;
   isLoading = false;
-  pagingMode: 'scroll' | 'paging' = 'scroll';
+  pagingMode: 'scroll' | 'paging' = 'paging';
   constructor(private accountService: AccountService) {
     // read data from file to localstorage
     this.unSubscribeAll = new Subject<any>();
@@ -35,39 +39,54 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllAccounyByRequest();
+    this.getAllAccounyByRequest(1);
   }
 
   loadDataToLocal(): void {
     localStorage.setItem('accounts', JSON.stringify(Accounts));
   }
-  getAllAccounyByRequest(): void {
-    this.accountService.getAccounts(createParamSearch({
-      last_name: this.searchStr,
-      start: 0,
-      limit: this.total
-    }))
+  onTableLoaded(page: number) {
+    this.getAllAccounyByRequest(page);
+  }
+  getAllAccounyByRequest(page: number): void {
+    this.accountService
+      .getAccounts(
+        createParamSearch({
+          last_name: this.searchStr,
+          start: 0,
+          limit: this.total,
+        })
+      )
       .pipe(takeUntil(this.unSubscribeAll))
-      .subscribe((resp: Account[]) => {
-        console.log(resp);
-        this.account = resp;
-      }, (err: Error) => {
-        this.account = [];
-      });
+      .subscribe(
+        (resp: Account[]) => {
+          console.log(resp);
+          this.account = resp;
+        },
+        (err: Error) => {
+          this.account = [];
+        }
+      );
   }
 
   getAllAccount(): void {
-    this.accountService.getAccounts(createParamSearch({
-      last_name: this.searchStr,
-      start: 0,
-      limit: 10
-    }))
+    this.accountService
+      .getAccounts(
+        createParamSearch({
+          last_name: this.searchStr,
+          start: 0,
+          limit: 10,
+        })
+      )
       .pipe(takeUntil(this.unSubscribeAll))
-      .subscribe((resp: Account[]) => {
-        this.account = resp;
-      }, (err: Error) => {
-        this.account = [];
-      });
+      .subscribe(
+        (resp: Account[]) => {
+          this.account = resp;
+        },
+        (err: Error) => {
+          this.account = [];
+        }
+      );
   }
 
   openAddAccount(): void {
@@ -92,17 +111,21 @@ export class AppComponent implements OnInit {
       employer: this.selectedAccount?.employer,
       gender: 'F',
       state: this.selectedAccount?.state,
-      _id: this.selectedAccount?._id
+      _id: this.selectedAccount?._id,
     });
 
-    this.accountService.editAccount(editedAccount)
+    this.accountService
+      .editAccount(editedAccount)
       .pipe(takeUntil(this.unSubscribeAll))
-      .subscribe((resp: Account[]) => {
-        this.getAllAccount();
-        this.isOpenEditAccount = false;
-      }, (err: Error) => {
-        this.account = [];
-      });
+      .subscribe(
+        (resp: Account[]) => {
+          this.getAllAccount();
+          this.isOpenEditAccount = false;
+        },
+        (err: Error) => {
+          this.account = [];
+        }
+      );
   }
 
   saveNew(): void {
@@ -117,17 +140,21 @@ export class AppComponent implements OnInit {
       email: faker.internet.email(),
       employer: faker.name.lastName(),
       gender: 'F',
-      state: faker.address.stateAbbr()
+      state: faker.address.stateAbbr(),
     });
 
-    this.accountService.addAccount(newAccount)
+    this.accountService
+      .addAccount(newAccount)
       .pipe(takeUntil(this.unSubscribeAll))
-      .subscribe((resp: Account[]) => {
-        this.getAllAccount();
-        this.isOpenAddAccount = false;
-      }, (err: Error) => {
-        this.account = [];
-      });
+      .subscribe(
+        (resp: Account[]) => {
+          this.getAllAccount();
+          this.isOpenAddAccount = false;
+        },
+        (err: Error) => {
+          this.account = [];
+        }
+      );
   }
 
   search(): void {

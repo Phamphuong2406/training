@@ -1,52 +1,33 @@
-.table-container {
-    width: 100%;
-    max-height: 500px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+.datatable-container {
+  border: 1px solid gray;
 }
-
-.custom-table {
-    width: 100%;
-    border-collapse: collapse;
+.datatable {
+  width: 1200px;
+  height: auto;
+  font-size: 0.9em;
+  min-width: 400px;
+  border-collapse: collapse;
+  thead {
+    tr {
+      background-color: #009879;
+      color: #ffffff;
+    }
+  }
+  tbody {
+    tr {
+      border-bottom: 1px solid gray;
+      td {
+        text-align: center;
+      }
+    }
+  }
 }
-
-.custom-table th,
-.custom-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}
-
-/* Giữ header cố định khi cuộn */
-.custom-table thead th {
+.scroll {
+  overflow-y: auto;
+  height: 400px;
+  thead tr {
     position: sticky;
     top: 0;
-    background: #f6f6f6;
     z-index: 2;
-}
-
-/* Loading và empty */
-.loading-cell,
-.empty-cell {
-    text-align: center;
-    color: gray;
-}
-
-.paging {
-    text-align: center;
-    padding: 10px;
-}
-
-button {
-    background: #007bff;
-    border: none;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background: #0056b3;
+  }
 }
