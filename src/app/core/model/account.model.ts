@@ -12,13 +12,16 @@ export type Account = {
   city: string;
   state: string;
 };
-
+export interface ColumnConfig {
+  field: string;
+  label: string;
+  width?: string;
+}
 export function createAccount(data: Partial<Account>): Account {
   return {
     ...data,
   } as Account;
 }
-
 
 export type ParamSearch = {
   limit: number;
@@ -32,6 +35,6 @@ export type ParamSearch = {
 
 export function createParamSearch(param: Partial<ParamSearch>): ParamSearch {
   return {
-    ...param
+    ...param,
   } as ParamSearch;
 }

@@ -3,6 +3,7 @@ import { AccountService } from './core/services/account.service';
 import { Observable, Subject } from 'rxjs';
 import {
   Account,
+  ColumnConfig,
   createAccount,
   createParamSearch,
 } from './core/model/account.model';
@@ -23,17 +24,16 @@ export class AppComponent implements OnInit {
   isOpenEditAccount = false;
   selectedAccount: Account | undefined;
   searchStr = '';
-  listColumns = [
+  listColumns: ColumnConfig[] = [
     { field: 'firstname', label: 'Tên tài khoản', width: '200px' },
     { field: 'account_number', label: 'Số tài khoản', width: '150px' },
     { field: 'balance', label: 'Số dư', width: '150px' },
   ];
-
   total = 25;
+  start = 0;
   isLoading = false;
-  pagingMode: 'scroll' | 'paging' = 'paging';
+  pagingMode: 'scroll' | 'paging' = 'scroll';
   constructor(private accountService: AccountService) {
-    // read data from file to localstorage
     this.unSubscribeAll = new Subject<any>();
     this.loadDataToLocal();
   }
@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
       .getAccounts(
         createParamSearch({
           last_name: this.searchStr,
-          start: 0,
+          start: this.start,
           limit: this.total,
         })
       )
