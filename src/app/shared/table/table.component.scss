@@ -1,0 +1,39 @@
+.datatable-container {
+    border: 1px solid gray;
+}
+
+.datatable {
+    width: 1200px;
+    height: auto;
+    font-size: 0.9em;
+    min-width: 400px;
+    border-collapse: collapse;
+
+    thead {
+        tr {
+            background-color: #009879;
+            color: #ffffff;
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom: 1px solid gray;
+
+            td {
+                text-align: center;
+            }
+        }
+    }
+}
+
+.scroll {
+    overflow-y: auto;
+    height: 400px;
+
+    thead tr {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+}

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   HttpRequest,
   HttpResponse,
@@ -7,12 +7,12 @@ import {
   HttpInterceptor,
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
-import {Observable, of, throwError} from 'rxjs';
-import {delay, mergeMap, materialize, dematerialize} from 'rxjs/operators';
-import {createAccount, Account, ParamSearch, createParamSearch} from '../model/account.model';
-import {UUID} from 'angular2-uuid';
-import {Accounts} from '../data/account';
-import {Users} from '../data/user';
+import { Observable, of, throwError } from 'rxjs';
+import { delay, mergeMap, materialize, dematerialize } from 'rxjs/operators';
+import { createAccount, Account, ParamSearch, createParamSearch } from '../model/account.model';
+import { UUID } from 'angular2-uuid';
+import { Accounts } from '../data/account';
+import { Users } from '../data/user';
 
 // array in local storage for registered users
 const users = JSON.parse(localStorage.getItem('users') as string) || Users;
@@ -24,7 +24,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    const {url, method, headers, body, params} = request;
+    const { url, method, headers, body, params } = request;
 
     // wrap in delayed observable to simulate server api call
     return of(null)
@@ -43,6 +43,8 @@ export class FakeBackendInterceptor implements HttpInterceptor {
           return register();
         case url.endsWith('/accounts') && method === 'GET':
           return getAccounts();
+        case url.endsWith('/allAccounts') && method === 'GET':
+          return getAllAccounts();
         case url.match(/\/accounts\/.+$/) && method === 'DELETE':
           return deleteAccount();
         case url.endsWith('accounts') && method === 'POST':
@@ -61,7 +63,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
     // tslint:disable-next-line:typedef
     function authenticate() {
-      const {username, password} = body;
+      const { username, password } = body;
       const user = users.find(
         (x: { username: any; password: any; }) => x.username === username && x.password === password
       );
@@ -91,7 +93,56 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
       return ok(user);
     }
+    function getAllAccounts() {
+      // if (!isLoggedIn()) {
+      //   return unauthorized();
+      // }
+      let paramSearch: ParamSearch;
+      paramSearch = createParamSearch({
+        limit: parseInt(params.get('limit') || '10', 0),
+        start: parseInt(params.get('start') || '0', 0),
+        last_name: params.has('last_name') ? params.get('last_name') || '' : '',
+        address: params.has('address') ? params.get('address') || '' : '',
+        email: params.has('email') ? params.get('email') || '' : '',
+        first_name: params.has('first_name') ? params.get('first_name') || '' : '',
+        gender: params.has('gender') ? params.get('gender') || '' : '',
+      });
+      let rs = accountList;
+      if (paramSearch.last_name !== '') {
+        rs = rs.filter((x: Account) => x.lastname.includes(paramSearch.last_name));
+      }
+      if (paramSearch.first_name !== '') {
+        rs = rs.filter((x: Account) => x.firstname.includes(paramSearch.first_name));
+      }
+      if (paramSearch.address !== '') {
+        rs = rs.filter((x: Account) => x.address.includes(paramSearch.address));
+      }
+      if (paramSearch.email !== '') {
+        rs = rs.filter((x: Account) => x.email.includes(paramSearch.email));
+      }
+      if (paramSearch.gender !== '') {
+        rs = rs.filter((x: Account) => x.gender.includes(paramSearch.gender));
+      }
 
+      // ✅ Lấy tổng số bản ghi sau khi filter
+      const totalItems = rs.length;
+
+      // ✅ Nếu start vượt quá số lượng dữ liệu, trả về rỗng nhưng vẫn trả totalItems
+      if (rs.length < paramSearch.start) {
+        return ok({
+          data: [],
+          totalItems: totalItems
+        });
+      }
+
+      // ✅ Trả về slice theo limit + start
+      const data = rs.slice(paramSearch.start, paramSearch.start + paramSearch.limit);
+
+      return ok({
+        data: data,
+        totalItems: totalItems
+      });
+    }
     // tslint:disable-next-line:typedef
     function getAccounts() {
       // if (!isLoggedIn()) {
@@ -244,17 +295,17 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
     // tslint:disable-next-line:typedef
     function ok(bodyData: any) {
-      return of(new HttpResponse({status: 200, body: bodyData}));
+      return of(new HttpResponse({ status: 200, body: bodyData }));
     }
 
     // tslint:disable-next-line:typedef
     function error(message: string) {
-      return throwError({error: {message}});
+      return throwError({ error: { message } });
     }
 
     // tslint:disable-next-line:typedef
     function unauthorized() {
-      return throwError({status: 401, error: {message: 'Unauthorised'}});
+      return throwError({ status: 401, error: { message: 'Unauthorised' } });
     }
 
     // tslint:disable-next-line:typedef

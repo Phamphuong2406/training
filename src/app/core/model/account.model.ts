@@ -12,11 +12,16 @@ export type Account = {
   city: string;
   state: string;
 };
-export interface ColumnConfig {
-  field: string;
-  label: string;
-  width?: string;
+export type Accounts = {
+  account_number: string;
+  balance: number;
+  firstname: string;
 }
+export interface PagedResult<T> {
+  data: T[];
+  totalItems: number;
+}
+
 export function createAccount(data: Partial<Account>): Account {
   return {
     ...data,

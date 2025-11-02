@@ -10,7 +10,7 @@
         <tbody *ngIf="!isLoading && rows.length > 0">
             <tr *ngFor="let row of rows">
                 <td *ngFor="let col of columns">
-                    {{ rows[col.field] }}
+                    {{ row[col.field] }}
 
                 </td>
             </tr>
@@ -29,6 +29,7 @@
 <div *ngIf="pagingMode === 'paging'" class="datatable-container paging">
     <ng-container *ngTemplateOutlet="tableTemplate"></ng-container>
 </div>
-<div *ngIf="pagingMode === 'paging'" class="pagination">
-    <button> 1 </button>
+<div *ngIf="pagingMode === 'paging'">
+
+    <app-pagination [totalItems]="rows.length" [itemsPerPage]="10"></app-pagination>
 </div>

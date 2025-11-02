@@ -3,9 +3,9 @@ import { AccountService } from './core/services/account.service';
 import { Observable, Subject } from 'rxjs';
 import {
   Account,
-  ColumnConfig,
   createAccount,
   createParamSearch,
+  PagedResult,
 } from './core/model/account.model';
 import { takeUntil } from 'rxjs/operators';
 import { Accounts } from './core/data/account';
@@ -22,17 +22,21 @@ export class AppComponent implements OnInit {
   unSubscribeAll: Subject<any>;
   isOpenAddAccount = false;
   isOpenEditAccount = false;
+  totalItems: any
+    ;
+  totalPages: any;
   selectedAccount: Account | undefined;
   searchStr = '';
-  listColumns: ColumnConfig[] = [
-    { field: 'firstname', label: 'Tên tài khoản', width: '200px' },
-    { field: 'account_number', label: 'Số tài khoản', width: '150px' },
-    { field: 'balance', label: 'Số dư', width: '150px' },
+  listColumns = [
+    { field: 'firstname' as keyof Account, label: 'Tên tài khoản', width: '30%' },
+    { field: 'account_number' as keyof Account, label: 'Số tài khoản', width: '30%' },
+    { field: 'balance' as keyof Account, label: 'Số dư', width: '30%' },
   ];
+
   total = 25;
   start = 0;
   isLoading = false;
-  pagingMode: 'scroll' | 'paging' = 'scroll';
+  pagingMode: 'scroll' | 'paging' = 'paging';
   constructor(private accountService: AccountService) {
     this.unSubscribeAll = new Subject<any>();
     this.loadDataToLocal();
@@ -50,7 +54,7 @@ export class AppComponent implements OnInit {
   }
   getAllAccounyByRequest(page: number): void {
     this.accountService
-      .getAccounts(
+      .getAllAccount(
         createParamSearch({
           last_name: this.searchStr,
           start: this.start,
@@ -59,16 +63,17 @@ export class AppComponent implements OnInit {
       )
       .pipe(takeUntil(this.unSubscribeAll))
       .subscribe(
-        (resp: Account[]) => {
-          console.log(resp);
-          this.account = resp;
+        (resp: PagedResult<Account>) => {
+          this.account = resp.data;
+          console.log("hhh");
+          console.log(this.account);
+          console.log(resp.totalItems);
         },
         (err: Error) => {
           this.account = [];
         }
       );
   }
-
   getAllAccount(): void {
     this.accountService
       .getAccounts(
@@ -80,7 +85,7 @@ export class AppComponent implements OnInit {
       )
       .pipe(takeUntil(this.unSubscribeAll))
       .subscribe(
-        (resp: Account[]) => {
+        (resp: Account[],) => {
           this.account = resp;
         },
         (err: Error) => {

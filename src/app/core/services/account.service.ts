@@ -1,14 +1,25 @@
-import {HttpBackend, HttpClient, HttpParams} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {map, filter, catchError} from 'rxjs/operators';
-import {Observable} from 'rxjs';
-import {Account, ParamSearch} from '../model/account.model';
+import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { map, filter, catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { Account, PagedResult, ParamSearch } from '../model/account.model';
 
 @Injectable()
 export class AccountService {
   // tslint:disable-next-line:variable-name
 
   constructor(private http: HttpClient) {
+  }
+  getAllAccount(param: ParamSearch): Observable<PagedResult<Account>> {
+    let params = new HttpParams()
+      .set('limit', param.limit.toString())
+      .set('start', param.start.toString())
+      .set('last_name', param.last_name || '')
+      .set('first_name', param.first_name || '')
+      .set('gender', param.gender || '')
+      .set('email', param.email || '')
+      .set('address', param.address || '');
+    return this.http.get<PagedResult<Account>>('/allAccounts', { params });
   }
 
   getAccounts(param: ParamSearch): Observable<any> {
