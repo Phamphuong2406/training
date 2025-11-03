@@ -22,21 +22,28 @@ export class AppComponent implements OnInit {
   unSubscribeAll: Subject<any>;
   isOpenAddAccount = false;
   isOpenEditAccount = false;
-  totalItems: any
-    ;
+  totalItems: number = 0;
   totalPages: any;
   selectedAccount: Account | undefined;
   searchStr = '';
   listColumns = [
-    { field: 'firstname' as keyof Account, label: 'Tên tài khoản', width: '30%' },
-    { field: 'account_number' as keyof Account, label: 'Số tài khoản', width: '30%' },
+    {
+      field: 'firstname' as keyof Account,
+      label: 'Tên tài khoản',
+      width: '30%',
+    },
+    {
+      field: 'account_number' as keyof Account,
+      label: 'Số tài khoản',
+      width: '30%',
+    },
     { field: 'balance' as keyof Account, label: 'Số dư', width: '30%' },
   ];
 
   total = 25;
   start = 0;
   isLoading = false;
-  pagingMode: 'scroll' | 'paging' = 'paging';
+  pagingMode: 'scroll' | 'paging' = 'scroll';
   constructor(private accountService: AccountService) {
     this.unSubscribeAll = new Subject<any>();
     this.loadDataToLocal();
@@ -52,7 +59,14 @@ export class AppComponent implements OnInit {
   onTableLoaded(page: number) {
     this.getAllAccounyByRequest(page);
   }
+  onSearchChanged(searchText: string) {
+    this.searchStr = searchText;
+    this.getAllAccount();
+    console.log('search', this.searchStr);
+  }
+
   getAllAccounyByRequest(page: number): void {
+    this.start = (page - 1) * this.total;
     this.accountService
       .getAllAccount(
         createParamSearch({
@@ -65,9 +79,7 @@ export class AppComponent implements OnInit {
       .subscribe(
         (resp: PagedResult<Account>) => {
           this.account = resp.data;
-          console.log("hhh");
-          console.log(this.account);
-          console.log(resp.totalItems);
+          this.totalItems = resp.totalItems;
         },
         (err: Error) => {
           this.account = [];
@@ -78,14 +90,14 @@ export class AppComponent implements OnInit {
     this.accountService
       .getAccounts(
         createParamSearch({
-          last_name: this.searchStr,
+          first_name: this.searchStr,
           start: 0,
-          limit: 10,
+          limit: this.total,
         })
       )
       .pipe(takeUntil(this.unSubscribeAll))
       .subscribe(
-        (resp: Account[],) => {
+        (resp: Account[]) => {
           this.account = resp;
         },
         (err: Error) => {

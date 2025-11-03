@@ -1,3 +1,4 @@
+<input type="text" (input)="onSearch($event)" placeholder="Nhập từ khóa tìm kiếm..." />
 <p>thêm mới</p>
 <ng-template #tableTemplate>
     <table class="datatable">
@@ -7,8 +8,8 @@
             </tr>
         </thead>
 
-        <tbody *ngIf="!isLoading && rows.length > 0">
-            <tr *ngFor="let row of rows">
+        <tbody *ngIf="rows.length > 0">
+            <tr *ngFor="let row of rows; trackBy: trackByFn">
                 <td *ngFor="let col of columns">
                     {{ row[col.field] }}
 
@@ -16,8 +17,12 @@
             </tr>
         </tbody>
 
-
     </table>
+    <div *ngIf="isLoading" class="loading-indicator">Loading...</div>
+
+    <div *ngIf="!isLoading && rows.length === 0" class="loading-indicator">
+        Không có dữ liệu
+    </div>
 </ng-template>
 
 <!-- Scroll -->
@@ -31,5 +36,6 @@
 </div>
 <div *ngIf="pagingMode === 'paging'">
 
-    <app-pagination [totalItems]="rows.length" [itemsPerPage]="10"></app-pagination>
+    <app-pagination [totalItems]="totalItems" [itemsPerPage]="total" [currentPage]="currentPage"
+        (onClick)="changePage($event)"></app-pagination>
 </div>

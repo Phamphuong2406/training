@@ -1,6 +1,7 @@
 <div class="pagination">
     <a href="#">«</a>
-    <a *ngFor="let page of pages" href="#">1</a>
+    <a (click)="pageClicked(page)" *ngFor="let page of pages" href="#"
+        [ngClass]="{'active': page == currentPage}">{{page}}</a>
 
     <!-- <a class="active" href="#">2</a> -->
     <a href="#">»</a>
